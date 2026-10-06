@@ -7,7 +7,7 @@ export const story = {
     to: 'Julian',
     storageKey: 'mdfh-proposal-v1',
   },
-  sound: { enabledByDefault: false, volume: 0.05 },
+  sound: { enabledByDefault: false, volume: 0.35 },
   chapters: {
     distance: { vh: 420, places: ['India', 'Philippines'], lines: [
       'There was a distance between us.',
