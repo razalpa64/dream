@@ -342,7 +342,7 @@ button:focus-visible, [tabindex]:focus-visible { outline: 2px dashed #c06a5a; ou
   .opening-subtitle { max-width: 88vw; font-size: clamp(21px, 5.4vw, 28px); }
   .opening-byline { font-size: 10px; letter-spacing: .16em; }
   .opening-scroll { bottom: max(20px, env(safe-area-inset-bottom)) !important; }
-  .home-opening-title, .travel-postmark, .season-label { top: calc(8% + 48px) !important; }
+  .home-opening-title, .travel-postmark { top: calc(8% + 48px) !important; }
   .home-opening-title h2 { font-size: clamp(34px, 10vw, 52px) !important; letter-spacing: .06em !important; }
   .travel-postmark .rounded-full { width: 72px; height: 72px; font-size: 11px; }
   .scene-folio { left: max(10px, env(safe-area-inset-left)) !important; top: max(10px, env(safe-area-inset-top)) !important; gap: 6px; min-height: 33px; max-width: calc(100vw - 132px); padding: 3px 8px 3px 3px; }

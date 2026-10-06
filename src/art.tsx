@@ -110,6 +110,27 @@ export function Tree({ x, y, s = 1, c = ['#6f8f5c', '#a2b37a', '#4f6f4c'], o = 1
     </g>
   );
 }
+export function PalmTree({ x, y, s = 1, c = '#65764f', trunk = '#806149', o = 1 }: { x: number; y: number; s?: number; c?: string; trunk?: string; o?: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`} opacity={o}>
+      <path d="M0 0 Q-16 -104 8 -230" stroke={trunk} strokeWidth="15" fill="none" strokeLinecap="round" />
+      <path d="M-6 -72 Q6 -80 11 -73 M-10 -132 Q3 -140 12 -132 M-4 -190 Q6 -196 12 -190" stroke="#5f4938" strokeWidth="3" fill="none" opacity=".55" />
+      <g transform="translate(8 -226)" filter="url(#wc)">
+        <path d="M0 0 Q-70 -44 -150 -34 Q-99 3 -7 15Z" fill={c} />
+        <path d="M0 0 Q-65 -60 -126 -108 Q-105 -42 -4 13Z" fill={c} opacity=".92" />
+        <path d="M0 0 Q-38 -76 -60 -160 Q-23 -104 4 8Z" fill={c} opacity=".96" />
+        <path d="M0 0 Q12 -88 45 -166 Q61 -94 12 10Z" fill={c} />
+        <path d="M0 0 Q52 -70 126 -126 Q101 -53 8 13Z" fill={c} opacity=".95" />
+        <path d="M0 0 Q77 -44 154 -49 Q107 2 8 14Z" fill={c} opacity=".9" />
+        <path d="M0 0 Q42 4 92 56 Q38 47 0 10Z" fill={c} opacity=".82" />
+        <g stroke="#435d42" strokeWidth="2" opacity=".5" fill="none">
+          <path d="M0 0 Q-72 -25 -143 -32 M0 0 Q-63 -39 -120 -103 M0 0 Q-36 -52 -58 -151 M0 0 Q15 -62 43 -158 M0 0 Q52 -47 119 -120 M0 0 Q76 -25 148 -47" />
+        </g>
+      </g>
+    </g>
+  );
+}
+
 export const Cloud = ({ x, y, s = 1, o = 0.9, c = '#fffaf0' }: { x: number; y: number; s?: number; o?: number; c?: string }) => (
   <g transform={`translate(${x} ${y}) scale(${s})`} opacity={o} filter="url(#wc)">
     <ellipse cx="0" cy="0" rx="90" ry="34" fill={c} /><ellipse cx="-50" cy="-14" rx="46" ry="34" fill={c} />

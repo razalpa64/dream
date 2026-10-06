@@ -1,7 +1,7 @@
 import { story } from './story';
 import type { Choice } from './story';
 import { Scene, Stage, Caption, Grad, seg, lerp, ease, win, camLerp } from './engine';
-import { Person, SeatedPerson, Chair, benchSeatY, Bouquet, Cup, Tree, Cloud, Flower, Heart, Stars, Birds, Plane, Moon, Bench, Ring, House, Particles, Hills, Sky, Lamp, Suitcase, INK } from './art';
+import { Person, SeatedPerson, Chair, benchSeatY, Bouquet, Cup, Tree, PalmTree, Cloud, Flower, Heart, Stars, Birds, Plane, Moon, Bench, Ring, House, Particles, Hills, Sky, Lamp, Suitcase, INK } from './art';
 
 const C = story.chapters;
 
@@ -18,14 +18,17 @@ export function Intro() {
         <g className="drift"><Cloud x={300} y={300} s={1.2} o={0.12} /><Cloud x={1300} y={420} s={1} o={0.1} /></g>
         <Hills y={760} c="#343653" amp={70} seed={2} />
         <Hills y={830} c="#20263f" amp={50} seed={5} />
+        <Tree x={250} y={850} s={1.2} c={['#30364f', '#4c4a5e', '#252c45']} o={0.72} />
+        <Tree x={1410} y={860} s={1.35} c={['#30364f', '#4c4a5e', '#252c45']} o={0.68} />
         <House x={520} y={830} s={0.5} lit={1} wall="#404667" roof="#2b3352" />
+        <House x={800} y={850} s={0.28} lit={0.65} wall="#363f60" roof="#252e4d" />
         <House x={1130} y={845} s={0.4} lit={1} wall="#404667" roof="#2b3352" />
       </Stage>
       <div aria-hidden className="opening-vellum" />
       <div aria-hidden className="opening-frame" />
       <div className="opening-copy absolute inset-0 flex flex-col items-center justify-center px-6 text-center" style={{ color: '#f6ead2' }}>
         <p className="opening-eyebrow font-serif intro-a" style={{ animationDelay: '.4s' }}>A LOVE STORY, IN THE MAKING</p>
-        <h1 className="opening-title font-serif intro-a" style={{ animationDelay: '.8s' }}>{s.title}</h1>
+        <h1 className="opening-title font-serif intro-a" style={{ animationDelay: '.8s' }}>{s.openingTitle}</h1>
         <div className="opening-rule intro-a" aria-hidden style={{ animationDelay: '1.7s' }}><span /><i>✦</i><span /></div>
         <p className="opening-subtitle font-serif intro-a" style={{ animationDelay: '2.2s' }}>{s.subtitle}</p>
         <p className="opening-byline font-serif intro-a" style={{ animationDelay: '3.1s' }}>FOR {s.to.toUpperCase()} <span aria-hidden>·</span> FROM {s.from.toUpperCase()}</p>
@@ -252,7 +255,10 @@ function DateScene({ i, q }: { i: number; q: number }) {
     case 4: return (<g>
       <rect x="-2000" y="-2000" width="6000" height="5000" fill="#f2b077" /><circle cx="800" cy={lerp(520, 600, q)} r="130" fill="#f8d68f" filter="url(#wc)" /><circle cx="800" cy="560" r="400" fill="url(#warmglow)" />
       <rect x="-2000" y="600" width="6000" height="3000" fill="#c87d68" /><path d="M-2000 650 L4000 650" stroke="#f5c48a" strokeWidth="4" opacity=".6" /><path d="M500 680 L1100 680" stroke="#f8d68f" strokeWidth="10" opacity=".4" />
+      <path d="M-1600 700 Q800 666 3200 700 M-1200 725 Q800 690 2800 725" stroke="#f0cb94" strokeWidth="3" fill="none" opacity=".35" />
       <rect x="-2000" y="760" width="6000" height="3000" fill="#e3c08f" />
+      <PalmTree x={255} y={860} s={1.05} c="#687751" o={.72} />
+      <PalmTree x={1360} y={860} s={1.18} c="#596f4d" o={.66} />
       <Couple x={800} y={830} s={1.3} oR="#4d5e6a" oJ="#e6c8a8" /><Birds y={240} c="#7a4a3a" />
     </g>);
     case 5: return (<g>
@@ -324,7 +330,17 @@ export function Proposal({ choice, onYes, onNotYet }: { choice: Choice; onYes: (
               <Birds y={260} c="#7a4a3a" />
               <Hills y={600} c="#c98a6a" seed={8} amp={50} /><Hills y={660} c="#9c7a52" seed={2} amp={40} />
               <Tree x={260} y={780} s={1.8} c={['#7d8a4c', '#a8a65c', '#5f6f42']} /><Tree x={1360} y={790} s={1.6} c={['#7d8a4c', '#a8a65c', '#5f6f42']} />
+              <g opacity={0.34} filter="url(#wc)">
+                <path d="M420 770 L420 600 Q420 430 800 405 Q1180 430 1180 600 L1180 770" fill="none" stroke="#785940" strokeWidth="13" />
+                <path d="M460 770 L460 620 Q460 480 800 450 Q1140 480 1140 620 L1140 770" fill="none" stroke="#b18a60" strokeWidth="4" />
+                <path d="M420 650 L1180 650 M420 700 L1180 700" fill="none" stroke="#785940" strokeWidth="4" opacity=".65" />
+              </g>
+              <g opacity={0.62}>{Array.from({ length: 11 }, (_, k) => {
+                const x = 440 + k * 72, t = (x - 800) / 360, y = 420 + 180 * t * t;
+                return <Flower key={k} x={x} y={y + 38} s={0.82} c={k % 2 ? '#e9a7a2' : '#f0c3b5'} stem={false} />;
+              })}</g>
               <rect x="-2000" y="760" width="6000" height="3000" fill="#8f9a56" />
+              <path d="M520 980 Q650 835 800 788 Q950 835 1080 980" fill="none" stroke="#d7bd89" strokeWidth="38" opacity=".32" />
               {Array.from({ length: 16 }, (_, k) => <Flower key={k} x={400 + k * 52} y={770 + (k % 3) * 14} s={0.9} c={['#d9766c', '#f0c3b5', '#e8c35a'][k % 3]} />)}
               <Bench x={800} y={790} s={1.1} />
               <SeatedPerson x={745} seatY={benchSeatY(790, 1.1)} floorY={790} s={1.15} kind="razal" armR={lerp(-10, -75, reach)} holdR={ring > 0 ? <Ring x={0} y={-6} s={0.5 + ring * 0.4} glow={ring} /> : undefined} outfit="#4f6573" />
