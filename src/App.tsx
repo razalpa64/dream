@@ -18,35 +18,6 @@ function Loader({ done }: { done: boolean }) {
   );
 }
 
-/** Optional, generated, royalty-free ambient piano-like tones (Web Audio). Never auto-plays. */
-function useAmbient(on: boolean) {
-  const ctx = useRef<AudioContext | null>(null);
-  const timer = useRef<number>(0);
-  useEffect(() => {
-    if (!on) { if (ctx.current) ctx.current.suspend(); clearInterval(timer.current); return; }
-    if (!ctx.current) ctx.current = new AudioContext();
-    const ac = ctx.current; ac.resume();
-    const master = ac.createGain(); master.gain.value = story.sound.volume; master.connect(ac.destination);
-    const scale = [261.6, 293.7, 329.6, 392, 440, 523.3, 587.3, 659.3];
-    const note = () => {
-      const docH = document.documentElement.scrollHeight - innerHeight;
-      const prog = docH > 0 ? scrollY / docH : 0;
-      const shift = prog > 0.85 ? 0.75 : 1;
-      const f = scale[Math.floor(Math.random() * scale.length)] * shift;
-      [1, 2].forEach((h, i) => {
-        const o = ac.createOscillator(), g = ac.createGain();
-        o.type = i ? 'sine' : 'triangle'; o.frequency.value = f * h;
-        g.gain.setValueAtTime(0, ac.currentTime); g.gain.linearRampToValueAtTime(i ? 0.15 : 0.5, ac.currentTime + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 3.5);
-        o.connect(g); g.connect(master); o.start(); o.stop(ac.currentTime + 3.6);
-      });
-    };
-    note();
-    timer.current = window.setInterval(() => { if (Math.random() > 0.25) note(); }, 1400);
-    return () => { clearInterval(timer.current); master.disconnect(); };
-  }, [on]);
-}
-
 export default function App() {
   const key = story.site.storageKey;
   const [loaded, setLoaded] = useState(false);
@@ -55,7 +26,14 @@ export default function App() {
   const [sound, setSound] = useState(story.sound.enabledByDefault);
   const [prog, setProg] = useState(0);
   const weddingRef = useRef<HTMLDivElement>(null);
-  useAmbient(sound);
+  const musicRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    const music = musicRef.current;
+    if (!music) return;
+    if (sound) void music.play().catch(() => setSound(false));
+    else music.pause();
+  }, [sound]);
 
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 3400);
@@ -74,6 +52,7 @@ export default function App() {
 
   return (
     <main className="relative">
+      <audio ref={musicRef} src="./music.m4a" loop preload="metadata" />
       <GlobalDefs />
       <Loader done={loaded} />
       <Intro />
