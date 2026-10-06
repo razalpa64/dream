@@ -2,16 +2,19 @@ import type { ReactNode } from 'react';
 import { rnd } from './engine';
 
 export const INK = '#3a2c26';
+const SIT_HIP_OFFSET = 76;
+const SIT_FOOT_OFFSET = 38;
+const BENCH_SEAT_OFFSET = 40;
 
 export type Kind = 'razal' | 'julian' | 'girl' | 'boy';
 type PP = {
   x: number; y: number; s?: number; kind: Kind; age?: number; walk?: number; flip?: boolean;
-  armL?: number; armR?: number; outfit?: string; sit?: boolean; lean?: number; o?: number;
+  armL?: number; armR?: number; outfit?: string; sit?: boolean; sitFootY?: number; lean?: number; o?: number;
   holdR?: ReactNode; holdL?: ReactNode; cap?: boolean; veil?: boolean; label?: string;
 };
 
-/** Hand-drawn character. Feet at (x,y). Arm angles: 0 = hanging, negative = forward. */
-export function Person({ x, y, s = 1, kind, age = 0, walk, flip, armL = 6, armR = -6, outfit, sit, lean = 0, o = 1, holdR, holdL, cap, veil, label }: PP) {
+/** Hand-drawn character. Standing feet land at (x,y); arm angles: 0 = hanging, negative = forward. */
+export function Person({ x, y, s = 1, kind, age = 0, walk, flip, armL = 6, armR = -6, outfit, sit, sitFootY = -SIT_FOOT_OFFSET, lean = 0, o = 1, holdR, holdL, cap, veil, label }: PP) {
   if (o <= 0.01) return null;
   const fem = kind === 'julian' || kind === 'girl';
   const skin = fem ? '#d9a77f' : '#b88461';
@@ -29,10 +32,14 @@ export function Person({ x, y, s = 1, kind, age = 0, walk, flip, armL = 6, armR 
   );
   return (
     <g transform={`translate(${x} ${y}) scale(${(flip ? -1 : 1) * s} ${s})`} opacity={o} filter="url(#wob)" aria-label={label}>
-      <ellipse cx="0" cy="2" rx="26" ry="5" fill="#2a1e18" opacity=".15" />
+      <ellipse cx="0" cy={sit ? sitFootY : 2} rx="26" ry="5" fill="#2a1e18" opacity=".15" />
       {sit ? (
-        <g stroke={fem ? skin : pants} strokeWidth={fem ? 6 : 10} strokeLinecap="round" fill="none">
-          <path d="M-4 -76 L26 -74 L26 -38" /><path d="M6 -76 L34 -73 L36 -38" />
+        <g>
+          <g stroke={fem ? skin : pants} strokeWidth={fem ? 6 : 10} strokeLinecap="round" fill="none">
+            <path d={`M-4 -76 L26 -74 L26 ${sitFootY}`} /><path d={`M6 -76 L34 -73 L36 ${sitFootY}`} />
+          </g>
+          <ellipse cx="26" cy={sitFootY + 2} rx="8" ry="3.5" fill={INK} />
+          <ellipse cx="36" cy={sitFootY + 3} rx="8" ry="3.5" fill={INK} />
         </g>
       ) : (
         <g stroke={fem ? skin : pants} strokeWidth={fem ? 6 : 10} strokeLinecap="round">
@@ -64,6 +71,15 @@ export function Person({ x, y, s = 1, kind, age = 0, walk, flip, armL = 6, armR 
       </g>
     </g>
   );
+}
+
+/** Seat and floor are SVG world coordinates; this keeps hips, legs and ground contact aligned. */
+type SeatedPersonProps = Omit<PP, 'y' | 'sit' | 'sitFootY'> & { seatY: number; floorY?: number };
+export function SeatedPerson({ seatY, floorY, s = 1, ...person }: SeatedPersonProps) {
+  // The pelvis is SIT_HIP_OFFSET units above the origin; let the lower legs meet the actual floor.
+  const y = seatY + SIT_HIP_OFFSET * s;
+  const sitFootY = ((floorY ?? seatY + SIT_FOOT_OFFSET * s) - y) / s;
+  return <Person {...person} y={y} s={s} sit sitFootY={sitFootY} />;
 }
 
 export const Bouquet = ({ s = 1 }: { s?: number }) => (
@@ -140,6 +156,7 @@ export const Plane = ({ x, y, s = 1, r = 0, c = '#f7efe1' }: { x: number; y: num
 export const Moon = ({ x, y, r = 50 }: { x: number; y: number; r?: number }) => (
   <g><circle cx={x} cy={y} r={r * 3} fill="url(#glow)" opacity=".35" /><circle cx={x} cy={y} r={r} fill="#f8eccb" filter="url(#wc)" /><circle cx={x - r * 0.3} cy={y - r * 0.2} r={r * 0.18} fill="#e8d7ad" opacity=".7" /><circle cx={x + r * 0.25} cy={y + r * 0.3} r={r * 0.12} fill="#e8d7ad" opacity=".7" /></g>
 );
+export const benchSeatY = (y: number, s = 1) => y - BENCH_SEAT_OFFSET * s;
 export const Bench = ({ x, y, s = 1 }: { x: number; y: number; s?: number }) => (
   <g transform={`translate(${x} ${y}) scale(${s})`} filter="url(#wob)">
     <rect x="-120" y="-92" width="240" height="10" rx="3" fill="#8a5c3c" stroke={INK} /><rect x="-120" y="-76" width="240" height="10" rx="3" fill="#8a5c3c" stroke={INK} />
@@ -147,6 +164,19 @@ export const Bench = ({ x, y, s = 1 }: { x: number; y: number; s?: number }) => 
     <path d="M-108 -30 L-112 0 M108 -30 L112 0 M-104 -92 L-108 -30 M104 -92 L108 -30" stroke={INK} strokeWidth="5" />
   </g>
 );
+/** A hand-drawn chair; `y` is the top of its seat so people can be aligned precisely. */
+export function Chair({ x, y, s = 1, wood = '#9a6a45', floorY }: { x: number; y: number; s?: number; wood?: string; floorY?: number }) {
+  const legEnd = floorY === undefined ? 38 : Math.max(8, (floorY - y) / s);
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`} filter="url(#wob)">
+      <path d="M-29 0 L-29 -72 Q0 -88 29 -72 L29 0Z" fill={wood} stroke={INK} strokeWidth="2.5" />
+      <path d="M-24 -51 Q0 -61 24 -51 M-24 -28 Q0 -38 24 -28" fill="none" stroke="#70482f" strokeWidth="3" opacity=".8" />
+      <rect x="-37" y="0" width="74" height="10" rx="3" fill="#bd8c60" stroke={INK} strokeWidth="2" />
+      <path d={`M-31 8 L-34 ${legEnd} M31 8 L34 ${legEnd} M-32 ${legEnd * .56} L32 ${legEnd * .56}`} fill="none" stroke={INK} strokeWidth="3.5" strokeLinecap="round" />
+    </g>
+  );
+}
+
 export const Ring = ({ x, y, s = 1, glow = 1 }: { x: number; y: number; s?: number; glow?: number }) => (
   <g transform={`translate(${x} ${y}) scale(${s})`}>
     <circle r="40" fill="url(#glow)" opacity={glow} />
@@ -172,7 +202,7 @@ export function House({ x, y, s = 1, lit = 1, wall = '#e8d3b0', roof = '#a85a3e'
 export function Particles({ kind, n = 18, seed = 1, w = 1600 }: { kind: 'leaf' | 'petal' | 'snow' | 'rain'; n?: number; seed?: number; w?: number }) {
   return (
     <g>{Array.from({ length: n }, (_, i) => {
-      const x = rnd(seed + i * 1.7) * w, dur = kind === 'rain' ? 0.9 + rnd(i) * 0.5 : 8 + rnd(i * 2.3) * 8;
+      const x = rnd(seed + i * 1.7) * w, dur = kind === 'rain' ? 1.8 + rnd(i) * 1.1 : 8 + rnd(i * 2.3) * 8;
       const style = { animationDuration: `${dur}s`, animationDelay: `${-rnd(i * 5.1 + seed) * dur}s`, ['--dx' as string]: kind === 'rain' ? '-40px' : `${(rnd(i * 4) - 0.3) * 200}px` };
       return (
         <g key={i} transform={`translate(${x} 0)`}><g className="fall" style={style}>

@@ -1,7 +1,7 @@
 import { story } from './story';
 import type { Choice } from './story';
 import { Scene, Stage, Caption, Grad, seg, lerp, ease, win, camLerp } from './engine';
-import { Person, Bouquet, Cup, Tree, Cloud, Flower, Heart, Stars, Birds, Plane, Moon, Bench, Ring, House, Particles, Hills, Sky, Lamp, Suitcase, INK } from './art';
+import { Person, SeatedPerson, Chair, benchSeatY, Bouquet, Cup, Tree, Cloud, Flower, Heart, Stars, Birds, Plane, Moon, Bench, Ring, House, Particles, Hills, Sky, Lamp, Suitcase, INK } from './art';
 
 const C = story.chapters;
 
@@ -9,24 +9,29 @@ const C = story.chapters;
 export function Intro() {
   const s = story.site;
   return (
-    <section className="relative h-screen overflow-hidden" aria-label="Opening" style={{ background: '#16203a' }}>
-      <Stage label="A night sky full of hand-drawn stars over distant hills" defs={<Grad id="isky" stops={['#0f1730', '#24315a', '#46507a']} />}>
+    <section className="opening-scene relative h-screen overflow-hidden" aria-label="Opening" style={{ background: '#16203a' }}>
+      <Stage label="A night sky full of hand-drawn stars over distant hills" defs={<Grad id="isky" stops={['#10162d', '#293454', '#59536d']} />}>
         <Sky fill="url(#isky)" />
         <Stars n={110} w={2400} h={1100} x0={-400} y0={-500} seed={3} />
+        <Particles kind="petal" n={12} seed={17} />
         <Moon x={1240} y={190} r={58} />
         <g className="drift"><Cloud x={300} y={300} s={1.2} o={0.12} /><Cloud x={1300} y={420} s={1} o={0.1} /></g>
-        <Hills y={760} c="#2b3558" amp={70} seed={2} />
-        <Hills y={830} c="#1d2643" amp={50} seed={5} />
-        <House x={520} y={830} s={0.5} lit={1} wall="#3a4566" roof="#2a3352" />
-        <House x={1130} y={845} s={0.4} lit={1} wall="#3a4566" roof="#2a3352" />
+        <Hills y={760} c="#343653" amp={70} seed={2} />
+        <Hills y={830} c="#20263f" amp={50} seed={5} />
+        <House x={520} y={830} s={0.5} lit={1} wall="#404667" roof="#2b3352" />
+        <House x={1130} y={845} s={0.4} lit={1} wall="#404667" roof="#2b3352" />
       </Stage>
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center" style={{ color: '#f6ead2' }}>
-        <h1 className="font-hand intro-a" style={{ fontSize: 'clamp(54px,10vw,140px)', lineHeight: 1, animationDelay: '0.6s', textShadow: '0 0 30px rgba(255,230,180,.35)' }}>{s.title}</h1>
-        <p className="font-serif intro-a italic" style={{ fontSize: 'clamp(20px,2.6vw,32px)', marginTop: 18, animationDelay: '2.2s' }}>{s.subtitle}</p>
-        <p className="font-serif intro-a" style={{ letterSpacing: '0.3em', fontSize: 14, marginTop: 34, animationDelay: '3.6s' }}>FOR {s.to.toUpperCase()} · FROM {s.from.toUpperCase()}</p>
-        <div className="font-hand intro-a absolute bottom-10 flex flex-col items-center" style={{ animationDelay: '5s', fontSize: 24 }}>
-          scroll to begin
-          <svg width="30" height="46" viewBox="0 0 30 46" className="bob"><path d="M15 2 Q10 20 15 40 M6 30 L15 42 L24 30" stroke="#f6ead2" strokeWidth="2" fill="none" strokeLinecap="round" /></svg>
+      <div aria-hidden className="opening-vellum" />
+      <div aria-hidden className="opening-frame" />
+      <div className="opening-copy absolute inset-0 flex flex-col items-center justify-center px-6 text-center" style={{ color: '#f6ead2' }}>
+        <p className="opening-eyebrow font-serif intro-a" style={{ animationDelay: '.4s' }}>A LOVE STORY, IN THE MAKING</p>
+        <h1 className="opening-title font-serif intro-a" style={{ animationDelay: '.8s' }}>{s.title}</h1>
+        <div className="opening-rule intro-a" aria-hidden style={{ animationDelay: '1.7s' }}><span /><i>✦</i><span /></div>
+        <p className="opening-subtitle font-serif intro-a" style={{ animationDelay: '2.2s' }}>{s.subtitle}</p>
+        <p className="opening-byline font-serif intro-a" style={{ animationDelay: '3.1s' }}>FOR {s.to.toUpperCase()} <span aria-hidden>·</span> FROM {s.from.toUpperCase()}</p>
+        <div className="opening-scroll font-hand intro-a absolute bottom-8 flex flex-col items-center" style={{ animationDelay: '4.4s' }}>
+          <span>scroll to begin</span>
+          <svg width="30" height="42" viewBox="0 0 30 46" className="bob" aria-hidden><path d="M15 2 Q10 20 15 40 M6 30 L15 42 L24 30" stroke="#f6ead2" strokeWidth="1.8" fill="none" strokeLinecap="round" /></svg>
         </div>
       </div>
     </section>
@@ -212,9 +217,10 @@ function DateScene({ i, q }: { i: number; q: number }) {
       <rect x="250" y="120" width="500" height="380" fill="#f6e3bd" stroke="#7a5838" strokeWidth="10" /><Tree x={420} y={500} s={0.9} c={['#9db57d', '#c3cf93', '#82a06c']} />
       <circle cx="1150" cy="200" r="70" fill="url(#warmglow)" /><path d="M1150 110 L1150 170 M1120 170 L1180 170 L1165 200 L1135 200Z" stroke={INK} fill="#e5b36a" />
       <rect x="-2000" y="700" width="6000" height="3000" fill="#a77a55" />
+      <Chair x={600} y={700} s={1.15} floorY={760} /><Chair x={1000} y={700} s={1.1} floorY={760} />
       <ellipse cx="800" cy="640" rx="190" ry="20" fill="#7b5236" /><line x1="800" y1="640" x2="800" y2="760" stroke={INK} strokeWidth="8" />
-      <Person x={600} y={760} s={1.25} kind="razal" sit armR={-70} />
-      <Person x={1000} y={760} s={1.2} kind="julian" sit flip armR={-60} />
+      <SeatedPerson x={600} seatY={700} floorY={760} s={1.25} kind="razal" armR={-70} />
+      <SeatedPerson x={1000} seatY={700} floorY={760} s={1.2} kind="julian" flip armR={-60} />
       <Cup x={740} y={636} s={1.6} /><Cup x={860} y={636} s={1.6} c="#e8c7b0" />
       <g opacity={seg(q, 0.7, 1)}><Cloud x={760} y={lerp(560, 300, q)} s={lerp(.2, 1.4, seg(q, .7, 1))} o={.8} /></g>
     </g>);
@@ -231,7 +237,7 @@ function DateScene({ i, q }: { i: number; q: number }) {
       <rect x="-2000" y="-2000" width="6000" height="5000" fill="#9fb1bf" />
       {[100, 450, 1150, 1450].map((x, k) => <g key={x}><rect x={x - 120} y={200 + k % 2 * 60} width="240" height="600" fill={['#7e8fa0', '#8a9aa6', '#748698', '#8796a3'][k]} filter="url(#wc)" />{[0, 1, 2].map(r => <rect key={r} x={x - 70} y={260 + r * 120 + k % 2 * 60} width="50" height="60" fill="#f2d79a" opacity=".7" />)}</g>)}
       <rect x="-2000" y="760" width="6000" height="3000" fill="#6f7f8c" /><ellipse cx="800" cy="840" rx="300" ry="20" fill="#9fb1bf" opacity=".6" />
-      <Particles kind="rain" n={90} seed={4} />
+      <Particles kind="rain" n={46} seed={4} />
       <Couple x={800} y={820} s={1.3} walk={q * 40} hold oR="#4f6b78" oJ="#b9655b" />
       <g transform="translate(800 560)" filter="url(#wob)"><path d="M-130 0 Q0 -110 130 0 Q100 -12 65 0 Q32 -14 0 0 Q-32 -14 -65 0 Q-100 -12 -130 0Z" fill="#c9564b" stroke={INK} strokeWidth="2" /><line x1="0" y1="-60" x2="-30" y2="120" stroke={INK} strokeWidth="3" /></g>
       <g opacity={seg(q, .75, 1)}><Stars n={40} h={400} seed={2} /></g>
@@ -255,8 +261,8 @@ function DateScene({ i, q }: { i: number; q: number }) {
       <rect x="-2000" y="740" width="6000" height="3000" fill="#9fb67c" />
       {[300, 520, 1060, 1250].map(x => <Flower key={x} x={x} y={760} c="#f0c3b5" />)}
       <Bench x={800} y={800} s={1.2} />
-      <Person x={740} y={752} s={1.25} kind="razal" sit lean={-6 + Math.sin(q * 30) * 4} armR={-40} />
-      <Person x={860} y={752} s={1.2} kind="julian" sit flip lean={-6 + Math.cos(q * 30) * 4} armR={-40} />
+      <SeatedPerson x={740} seatY={benchSeatY(800, 1.2)} floorY={800} s={1.25} kind="razal" lean={-6 + Math.sin(q * 30) * 4} armR={-40} />
+      <SeatedPerson x={860} seatY={benchSeatY(800, 1.2)} floorY={800} s={1.2} kind="julian" flip lean={-6 + Math.cos(q * 30) * 4} armR={-40} />
       {[0, 1, 2].map(k => <text key={k} x={790 + k * 30} y={500 - k * 20 - q * 40} className="font-hand" fontSize="30" fill="#b45f50" opacity={seg(q, .2 + k * .1, .4 + k * .1)}>ha</text>)}
     </g>);
     case 6: return (<g>
@@ -321,24 +327,24 @@ export function Proposal({ choice, onYes, onNotYet }: { choice: Choice; onYes: (
               <rect x="-2000" y="760" width="6000" height="3000" fill="#8f9a56" />
               {Array.from({ length: 16 }, (_, k) => <Flower key={k} x={400 + k * 52} y={770 + (k % 3) * 14} s={0.9} c={['#d9766c', '#f0c3b5', '#e8c35a'][k % 3]} />)}
               <Bench x={800} y={790} s={1.1} />
-              <Person x={745} y={746} s={1.15} kind="razal" sit armR={lerp(-10, -75, reach)} holdR={ring > 0 ? <Ring x={0} y={-6} s={0.5 + ring * 0.4} glow={ring} /> : undefined} outfit="#4f6573" />
-              <Person x={860} y={746} s={1.1} kind="julian" sit flip armR={lerp(-5, -40, seg(p, 0.6, 0.8))} outfit="#e9d2b8" />
+              <SeatedPerson x={745} seatY={benchSeatY(790, 1.1)} floorY={790} s={1.15} kind="razal" armR={lerp(-10, -75, reach)} holdR={ring > 0 ? <Ring x={0} y={-6} s={0.5 + ring * 0.4} glow={ring} /> : undefined} outfit="#4f6573" />
+              <SeatedPerson x={860} seatY={benchSeatY(790, 1.1)} floorY={790} s={1.1} kind="julian" flip armR={lerp(-5, -40, seg(p, 0.6, 0.8))} outfit="#e9d2b8" />
               <rect x="-2000" y="-2000" width="6000" height="6000" fill="#f6dcb0" opacity={haze} />
-              <g opacity={haze * 2}><Person x={745} y={746} s={1.15} kind="razal" sit armR={-75} holdR={<Ring x={0} y={-6} s={0.9} glow={1} />} outfit="#4f6573" /><Person x={860} y={746} s={1.1} kind="julian" sit flip armR={lerp(-5, -40, seg(p, 0.6, 0.8))} outfit="#e9d2b8" /></g>
+              <g opacity={haze * 2}><SeatedPerson x={745} seatY={benchSeatY(790, 1.1)} floorY={790} s={1.15} kind="razal" armR={-75} holdR={<Ring x={0} y={-6} s={0.9} glow={1} />} outfit="#4f6573" /><SeatedPerson x={860} seatY={benchSeatY(790, 1.1)} floorY={790} s={1.1} kind="julian" flip armR={lerp(-5, -40, seg(p, 0.6, 0.8))} outfit="#e9d2b8" /></g>
               <Particles kind="petal" n={12} seed={5} />
             </Stage>
             <Caption o={win(p, 0.56, 1.2)} pos="top" size="lg" serif color="#7a2f28">{story.site.to.toUpperCase()}…</Caption>
             <Caption o={win(p, 0.64, 1.2)} pos="upper" size="lg" serif color="#7a2f28" style={{ top: '19%' }}>{P.question}</Caption>
-            <div className="pointer-events-none absolute bottom-[18%] left-0 right-0 flex flex-col items-center gap-1 px-6 text-center font-hand" style={{ color: '#3a2c26', fontSize: 'clamp(19px,2.2vw,28px)', textShadow: '0 0 14px rgba(255,240,215,.95)' }}>
+            <div className="proposal-vow pointer-events-none absolute left-1/2 top-[32%] z-10 flex -translate-x-1/2 flex-col items-center gap-1 px-6 text-center font-hand" style={{ color: '#3a2c26', fontSize: 'clamp(19px,2.2vw,28px)', textShadow: '0 0 14px rgba(255,240,215,.95)' }}>
               {P.lines.map((l, k) => <span key={k} style={{ opacity: seg(p, 0.72 + k * 0.05, 0.76 + k * 0.05) }}>{l}</span>)}
             </div>
             {showChoice && (
-              <div className="absolute bottom-[5%] left-0 right-0 z-20 flex items-center justify-center gap-10" style={{ opacity: seg(p, 0.9, 0.95) }} role="group" aria-label="Your answer">
+              <div className="proposal-choices absolute bottom-[5%] left-0 right-0 z-20 flex items-center justify-center gap-10" style={{ opacity: seg(p, 0.9, 0.95) }} role="group" aria-label="Your answer">
                 {choice === 'yes' ? (
                   <p className="font-hand" style={{ fontSize: 'clamp(28px,4vw,46px)', color: '#7a2f28', textShadow: '0 0 14px #fff2dc' }}>{P.yesText} <span aria-hidden>❤</span></p>
                 ) : (<>
-                  <button className="choice" style={{ fontSize: 'clamp(34px,5vw,58px)', color: '#a3352b' }} onClick={onYes}>{P.yesLabel}</button>
-                  <button className="choice" style={{ fontSize: 'clamp(24px,3vw,36px)', color: '#5c4a3e' }} onClick={onNotYet}>{P.notYetLabel}</button>
+                  <button className="choice choice--proposal choice--yes" style={{ fontSize: 'clamp(34px,5vw,58px)', color: '#9b3e3d' }} onClick={onYes}>{P.yesLabel}</button>
+                  <button className="choice choice--proposal choice--quiet" style={{ fontSize: 'clamp(24px,3vw,36px)', color: '#58463b' }} onClick={onNotYet}>{P.notYetLabel}</button>
                 </>)}
               </div>
             )}
@@ -361,7 +367,7 @@ export function YesOverlay({ onDone }: { onDone: () => void }) {
             <Flower x={(k * 137) % 1600} y={560 + ((k * 53) % 320)} s={1 + (k % 4) * 0.4} c={['#d9766c', '#f0c3b5', '#e8c35a', '#fff3e6', '#c9564b'][k % 5]} />
           </g>
         ))}
-        <g className="bloom" style={{ animationDelay: '.4s' }}><Bench x={800} y={720} s={0.8} /><Person x={760} y={688} s={0.8} kind="razal" sit armR={-30} outfit="#4f6573" /><Person x={840} y={688} s={0.78} kind="julian" sit flip armR={-30} outfit="#e9d2b8" /></g>
+        <g className="bloom" style={{ animationDelay: '.4s' }}><Bench x={800} y={720} s={0.8} /><SeatedPerson x={760} seatY={benchSeatY(720, 0.8)} floorY={720} s={0.8} kind="razal" armR={-30} outfit="#4f6573" /><SeatedPerson x={840} seatY={benchSeatY(720, 0.8)} floorY={720} s={0.78} kind="julian" flip armR={-30} outfit="#e9d2b8" /></g>
       </svg>
       {Array.from({ length: 14 }, (_, k) => (
         <svg key={k} className="rise absolute" style={{ left: `${(k * 71) % 100}%`, bottom: -40, animationDelay: `${2 + k * 0.5}s` }} width="40" height="40" viewBox="-20 -6 40 34" aria-hidden><Heart x={0} y={0} s={1} c="#c9564b" fill /></svg>

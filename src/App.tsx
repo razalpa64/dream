@@ -5,6 +5,27 @@ import { GlobalDefs, PaperOverlay } from './engine';
 import { Intro, Distance, Airport, Arrival, Dating, Proposal, YesOverlay, NotYetOverlay } from './scenes1';
 import { Wedding, Home, Family, Growing, LettingGo, Travel, Time, Final, End } from './scenes2';
 
+function ReadingThread() {
+  const [prog, setProg] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const range = document.documentElement.scrollHeight - innerHeight;
+        const next = range > 0 ? Math.max(0, Math.min(1, scrollY / range)) : 0;
+        setProg(current => Math.abs(current - next) < 0.001 ? current : next);
+      });
+    };
+    update();
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update);
+    return () => { removeEventListener('scroll', update); removeEventListener('resize', update); cancelAnimationFrame(raf); };
+  }, []);
+  return <div aria-hidden className="reading-thread pointer-events-none fixed left-0 top-0 z-50" style={{ width: `${prog * 100}%` }} />;
+}
+
 function Loader({ done }: { done: boolean }) {
   return (
     <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center transition-opacity duration-1000" style={{ background: '#f4ead6', opacity: done ? 0 : 1, pointerEvents: done ? 'none' : 'auto' }} aria-live="polite">
@@ -24,13 +45,13 @@ export default function App() {
   const [choice, setChoice] = useState<Choice>(() => (localStorage.getItem(key) as Choice) || null);
   const [overlay, setOverlay] = useState<'yes' | 'notyet' | null>(null);
   const [sound, setSound] = useState(story.sound.enabledByDefault);
-  const [prog, setProg] = useState(0);
   const weddingRef = useRef<HTMLDivElement>(null);
   const musicRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const music = musicRef.current;
     if (!music) return;
+    music.volume = story.sound.volume;
     if (!sound) { music.pause(); return; }
     void music.play().catch(() => setSound(false));
   }, [sound]);
@@ -38,10 +59,6 @@ export default function App() {
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 3400);
     return () => clearTimeout(t);
-  }, []);
-  useEffect(() => {
-    const on = () => { const h = document.documentElement.scrollHeight - innerHeight; setProg(h > 0 ? scrollY / h : 0); };
-    addEventListener('scroll', on, { passive: true }); return () => removeEventListener('scroll', on);
   }, []);
   useEffect(() => { document.body.style.overflow = overlay || !loaded ? 'hidden' : ''; }, [overlay, loaded]);
 
@@ -52,7 +69,7 @@ export default function App() {
 
   return (
     <main className="relative">
-      <audio ref={musicRef} src="./music.m4a" loop preload="metadata" volume={story.sound.volume} />
+      <audio ref={musicRef} src="./music.m4a" loop preload="metadata" />
       <GlobalDefs />
       <Loader done={loaded} />
       <Intro />
@@ -78,14 +95,13 @@ export default function App() {
       {overlay === 'yes' && <YesOverlay onDone={goNext} />}
       {overlay === 'notyet' && <NotYetOverlay onContinue={() => { if (choice !== 'yes') save('notyet'); goNext(); }} />}
       <PaperOverlay />
-      {/* hand-drawn progress thread */}
-      <div aria-hidden className="pointer-events-none fixed left-0 top-0 z-50 h-[3px]" style={{ width: `${prog * 100}%`, background: 'repeating-linear-gradient(90deg,#b04c3f 0 10px,transparent 10px 16px)', opacity: 0.6 }} />
-      <div className="fixed bottom-3 right-4 z-50 flex items-center gap-3 font-hand" style={{ fontSize: 18 }}>
-        <button onClick={() => setSound(s => !s)} aria-pressed={sound} aria-label={sound ? 'Turn music off' : 'Turn music on'}
-          className="cursor-pointer" style={{ background: 'rgba(251,243,223,.75)', border: '1px solid #3a2c26', borderRadius: 999, padding: '2px 12px', color: '#3a2c26' }}>
-          {sound ? '♪ music on' : '♪ music off'}
+      {/* a fine gilded thread marks the reader's place without rerendering the story */}
+      <ReadingThread />
+      <div className="story-controls fixed bottom-3 right-4 z-50 flex items-center gap-2 font-hand">
+        <button onClick={() => setSound(s => !s)} aria-pressed={sound} aria-label={sound ? 'Turn music off' : 'Turn music on'} className="sound-toggle">
+          <span aria-hidden className="sound-toggle-icon">{sound ? '♫' : '♪'}</span> {sound ? 'music on' : 'music off'}
         </button>
-        {choice && <button onClick={restart} className="cursor-pointer" style={{ background: 'none', border: 'none', color: '#f3e4c8', opacity: 0.5, textShadow: '0 0 6px #000' }} aria-label="Restart the story and reset the proposal">↺</button>}
+        {choice && <button onClick={restart} className="restart-button" aria-label="Restart the story and reset the proposal">↺</button>}
       </div>
     </main>
   );
