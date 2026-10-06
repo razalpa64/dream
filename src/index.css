@@ -39,10 +39,47 @@ svg .sway, svg .twinkle, svg .flap, svg .bob, svg .fall, svg .drift, svg .breath
 .choice:hover::after, .choice:focus-visible::after { transform: scaleX(1); }
 button:focus-visible, [tabindex]:focus-visible { outline: 2px dashed #c06a5a; outline-offset: 4px; }
 
+/* Captions stay readable over both light and dark story paintings. */
+.story-caption { z-index: 5; padding-inline: clamp(16px, 5vw, 48px); }
+.story-caption-text { text-wrap: pretty; }
+.scene-stage { height: 100vh; height: 100svh; }
+
 .postcard { transition: transform .6s ease; transform-style: preserve-3d; }
 .postcard:hover { transform: translateY(-8px) rotate(0deg) !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .sway, .twinkle, .flap, .bob, .drift, .fall, .birdcross, .breathe, .rise { animation: none !important; }
   .bloom { animation-duration: .01s; }
+}
+
+@media (max-width: 640px) {
+  html, body { min-height: 100%; }
+  .story-caption { padding-inline: 14px; }
+  .story-caption-top { top: calc(7% + env(safe-area-inset-top)) !important; }
+  .story-caption-upper { top: calc(18% + env(safe-area-inset-top)) !important; }
+  .story-caption-center { top: 42% !important; }
+  .story-caption-bottom { top: auto !important; bottom: calc(15% + env(safe-area-inset-bottom)); }
+  .story-caption-text {
+    width: fit-content;
+    max-width: min(100%, 34rem) !important;
+    padding: 11px 16px;
+    border: 1px solid rgba(105, 76, 49, .2);
+    border-radius: 12px;
+    background: rgba(250, 244, 232, .96);
+    color: #33251f !important;
+    font-size: clamp(21px, 5.4vw, 28px) !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,.8) !important;
+    box-shadow: 0 5px 18px rgba(28, 23, 19, .18), 0 1px 2px rgba(28,23,19,.12);
+    clip-path: none !important;
+    transform: none !important;
+  }
+  .story-caption-xl .story-caption-text { font-size: clamp(30px, 9vw, 46px) !important; }
+  .story-caption-lg .story-caption-text { font-size: clamp(26px, 7.2vw, 38px) !important; }
+  .story-caption-sm .story-caption-text { font-size: clamp(18px, 4.8vw, 23px) !important; }
+  .paper-grain { opacity: .06 !important; }
+  .paper-vignette { opacity: .55; }
+  .postcard:hover { transform: none !important; }
+  .scene-stage { height: 100vh; height: 100svh; }
 }

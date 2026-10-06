@@ -33,7 +33,7 @@ export function Scene({ vh, bg, label, children }: { vh: number; bg?: string; la
   }, []);
   return (
     <section ref={ref} aria-label={label} style={{ height: vh + 'vh' }} className="relative">
-      <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ background: bg }}>
+      <div className="scene-stage sticky top-0 h-screen w-full overflow-hidden" style={{ background: bg }}>
         {st.near && children(st.p)}
       </div>
     </section>
@@ -74,8 +74,8 @@ export function Caption({ o, children, pos = 'bottom', size = 'md', serif, color
   const fs = { sm: 'clamp(20px,2.4vw,30px)', md: 'clamp(26px,3.4vw,44px)', lg: 'clamp(34px,5vw,68px)', xl: 'clamp(40px,7vw,104px)' }[size];
   const reveal = ease(clamp(o * 1.15));
   return (
-    <div className="pointer-events-none absolute left-0 right-0 flex justify-center px-6 text-center" style={{ top, ...style }}>
-      <p className={serif ? 'font-serif' : 'font-hand'}
+    <div className={`story-caption story-caption-${pos} story-caption-${size} pointer-events-none absolute left-0 right-0 flex justify-center px-6 text-center`} style={{ top, ...style }}>
+      <p className={`story-caption-text ${serif ? 'font-serif' : 'font-hand'}`}
         style={{ fontSize: fs, color, lineHeight: 1.15, maxWidth: 900, letterSpacing: serif ? '0.06em' : 0, opacity: Math.min(1, o * 1.4),
           clipPath: `inset(-20% ${(1 - reveal) * 100}% -20% 0)`, textShadow: `0 0 18px ${glow}, 0 0 4px ${glow}`, transform: `translateY(${(1 - o) * 6}px) rotate(${serif ? 0 : -1}deg)`, margin: 0 }}>
         {children}
@@ -109,8 +109,8 @@ const grain = `url("data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns="ht
 export function PaperOverlay() {
   return (
     <>
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-40" style={{ backgroundImage: grain, mixBlendMode: 'multiply', opacity: 0.32 }} />
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-40" style={{ background: 'radial-gradient(ellipse at center, transparent 55%, rgba(60,40,25,.28) 100%)' }} />
+      <div aria-hidden className="paper-grain pointer-events-none fixed inset-0 z-40" style={{ backgroundImage: grain, mixBlendMode: 'multiply', opacity: 0.14 }} />
+      <div aria-hidden className="paper-vignette pointer-events-none fixed inset-0 z-40" style={{ background: 'radial-gradient(ellipse at center, transparent 62%, rgba(60,40,25,.16) 100%)' }} />
     </>
   );
 }
