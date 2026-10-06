@@ -2,6 +2,7 @@
 export const story = {
   site: {
     title: 'My Dream for Her',
+    openingTitle: 'Our Future',
     subtitle: 'A life I hope we get to live.',
     from: 'Razal',
     to: 'Julian',

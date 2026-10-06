@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { story } from './story';
 import { Scene, Stage, Caption, Grad, seg, lerp, ease, win, camLerp, rnd } from './engine';
 import type { Cam } from './engine';
-import { Bird, Person, Cup, Tree, Cloud, Flower, Heart, Stars, Birds, Plane, Moon, Bench, Ring, House, Particles, Hills, Sky, Lamp, Suitcase, GradCap, Leaf, INK } from './art';
+import { Bird, Person, SeatedPerson, Chair, benchSeatY, Cup, Tree, Cloud, Flower, Heart, Stars, Birds, Plane, Moon, Bench, Ring, House, Particles, Hills, Sky, Lamp, Suitcase, GradCap, Leaf, INK } from './art';
 
 const C = story.chapters;
 const ROOM = (x: number, y: number, w: number, h: number, c: string) => <rect x={x} y={y} width={w} height={h} fill={c} stroke={INK} strokeWidth="6" />;
@@ -80,7 +80,7 @@ function HomeInterior({ t, onRoom }: { t: number; onRoom: (id: string) => void }
         <rect x="760" y="540" width="200" height="130" fill="#2a3040" stroke={INK} strokeWidth="5" /><rect x="770" y="550" width="180" height="110" fill="#7fa0b8" opacity={0.5 + 0.3 * Math.sin(t * 60)} />
         <path d="M1000 780 L1340 780 L1340 840 L1000 840Z M1000 720 L1340 720 L1340 790 L1000 790Z" fill="#a85a3e" stroke={INK} strokeWidth="3" />
         <Lamp x={1370} y={860} />
-        <Person x={1130} y={810} s={0.9} kind="razal" sit flip armR={-30} /><Person x={1210} y={810} s={0.85} kind="julian" sit flip lean={-14} />
+        <SeatedPerson x={1130} seatY={780} floorY={860} s={0.9} kind="razal" flip armR={-30} /><SeatedPerson x={1210} seatY={780} floorY={860} s={0.85} kind="julian" flip lean={-14} />
         <rect x="1180" y="560" width="160" height="110" fill="#f6ecd6" stroke={INK} strokeWidth="4" /><Flower x={1260} y={660} s={1.4} /></g>
       {ROOM(700, 100, 700, 380, '#e9d8c0')}
       {[0, 1, 2, 3, 4, 5].map(k => <rect key={k} x={760 + k * 34} y={150} width="26" height="90" fill={['#a85a3e', '#5d7b8a', '#e8c35a', '#7c9a5e', '#c97a6d', '#8a6447'][k]} stroke={INK} />)}
@@ -123,7 +123,7 @@ export function Home() {
                 <Birds y={200} />
               </g>) : <HomeInterior t={p} onRoom={id => setNote(rooms.find(r => r.id === id)?.note ?? null)} />}
             </Stage>
-            {key > 0 && <div className="pointer-events-none absolute left-1/2 top-[8%] -translate-x-1/2 text-center" style={{ opacity: key }}>
+            {key > 0 && <div className="home-opening-title pointer-events-none absolute left-1/2 top-[8%] -translate-x-1/2 text-center" style={{ opacity: key }}>
               <svg width="120" height="60" viewBox="0 0 120 60" aria-hidden style={{ transform: `rotate(${(1 - key) * -30}deg)` }}><circle cx="24" cy="30" r="16" fill="none" stroke="#b07a2a" strokeWidth="5" /><path d="M40 30 L110 30 M92 30 L92 44 M104 30 L104 40" stroke="#b07a2a" strokeWidth="5" strokeLinecap="round" /><Heart x={24} y={22} s={0.45} c="#c9564b" fill /></svg>
               <h2 className="font-serif m-0" style={{ fontSize: 'clamp(40px,7vw,96px)', letterSpacing: '.1em', color: '#5a3a28', textShadow: '0 0 20px #fff3dc' }}>OUR HOME</h2>
             </div>}
@@ -191,7 +191,13 @@ export function Family() {
                 {v === 1 && <><rect x="680" y="690" width="240" height="14" fill="#8a6447" /><path d="M760 690 L840 690 L836 650 L764 650Z" fill="#f6ecd6" stroke={INK} />{[780, 800, 820].map(x => <g key={x}><line x1={x} y1="650" x2={x} y2="634" stroke="#e8c35a" strokeWidth="3" /><ellipse cx={x} cy="628" rx="3" ry="6" fill="#f3b54a" className="twinkle" /></g>)}
                   <Person x={620} y={790} s={kidG} kind="girl" armL={-150} armR={-150} /><Person x={980} y={790} s={kidG * 0.8} kind="boy" flip armL={-150} armR={-150} />{[0, 1, 2].map(k => <circle key={k} cx={600 + k * 200} cy={480} r="22" fill={['#d9766c', '#e8c35a', '#9fc3d8'][k]} className="bob" />)}</>}
                 {v === 2 && <><rect x="560" y="720" width="480" height="60" rx="10" fill="#e6b3a5" stroke={INK} /><circle cx="620" cy="716" r="14" fill="#d9a77f" /><circle cx="980" cy="716" r="12" fill="#b88461" /><Moon x={800} y={300} r={20} /></>}
-                {v === 3 && <><rect x="600" y="690" width="400" height="14" fill="#8a6447" /><Person x={620} y={790} s={kidG} kind="girl" sit armR={-60} /><Person x={980} y={790} s={kidG * 0.85} kind="boy" sit flip armR={-60} />{[680, 760, 840, 920].map(x => <Cup key={x} x={x} y={690} steam={x === 760} />)}</>}
+                {v === 3 && <>
+                  <Chair x={620} y={730} s={0.8} floorY={780} /><Chair x={980} y={730} s={kidG * 0.85} floorY={780} />
+                  <rect x="600" y="690" width="400" height="14" fill="#8a6447" />
+                  <SeatedPerson x={620} seatY={730} floorY={780} s={kidG} kind="girl" armR={-60} />
+                  <SeatedPerson x={980} seatY={730} floorY={780} s={kidG * 0.85} kind="boy" flip armR={-60} />
+                  {[680, 760, 840, 920].map(x => <Cup key={x} x={x} y={690} steam={x === 760} />)}
+                </>}
               </g>}
             </Stage>
             <Caption o={win(p, 0.36, 0.45, 0.03)} pos="top" size="lg" serif color="#5a3a28">{F.daughter}</Caption>
@@ -322,7 +328,7 @@ function Destination({ id }: { id: string }) {
   switch (id) {
     case 'philippines': return <g><rect x="-200" y="-200" width="2000" height="1300" fill="#f6c98a" /><Sun x={1100} y={300} /><rect x="-200" y="520" width="2000" height="300" fill="#5aa0a8" /><path d="M-200 700 Q800 640 1800 720 L1800 1100 L-200 1100Z" fill="#efd9a8" />{[300, 1300].map(x => <g key={x} transform={`translate(${x} 720)`}><path d="M0 0 Q20 -120 50 -240" stroke="#8a6447" strokeWidth="12" fill="none" /><g className="sway">{[-80, -40, 0, 40, 80].map(a => <path key={a} d={`M50 -240 q${a} -20 ${a * 1.5} 40`} stroke="#5f8f50" strokeWidth="10" fill="none" />)}</g></g>)}{couple('#5d7b8a')}</g>;
     case 'india': return <g><rect x="-200" y="-200" width="2000" height="1300" fill="#f3d7b0" /><Sun x={400} y={240} /><g transform="translate(800 640)" fill="#fbf3e6" stroke={INK} strokeWidth="2"><rect x="-260" y="-120" width="520" height="140" /><path d="M-110 -120 Q-110 -300 0 -340 Q110 -300 110 -120Z" /><path d="M0 -340 L0 -380" />{[-330, 330].map(x => <rect key={x} x={x - 12} y="-300" width="24" height="320" />)}<path d="M-50 20 L-50 -70 Q0 -110 50 -70 L50 20" fill="#e6d5be" /></g><rect x="-200" y="660" width="2000" height="80" fill="#8fb0b8" /><rect x="-200" y="740" width="2000" height="500" fill="#c9b08a" />{couple('#a85a3e')}</g>;
-    case 'paris': return <g><rect x="-200" y="-200" width="2000" height="1300" fill="#d6dbe0" /><Cloud x={400} y={200} /><g transform="translate(1100 760)" stroke={INK} strokeWidth="3" fill="none"><path d="M-110 0 Q-40 -200 -10 -480 L10 -480 Q40 -200 110 0" fill="#8a7a6a" /><path d="M-70 -120 L70 -120 M-40 -280 L40 -280" /><path d="M-50 0 Q0 -80 50 0" fill="#d6dbe0" /></g>{[0, 1, 2, 3].map(k => <rect key={k} x={-100 + k * 180} y={420 + (k % 2) * 40} width="160" height="400" fill={['#e8dcc6', '#f0e4cf', '#e0d2bb', '#ece0cb'][k]} stroke={INK} />)}<rect x="-200" y="780" width="2000" height="500" fill="#9a9488" /><Lamp x={650} y={800} />{couple('#3e4a5c')}<Particles kind="rain" n={40} seed={8} /></g>;
+    case 'paris': return <g><rect x="-200" y="-200" width="2000" height="1300" fill="#d6dbe0" /><Cloud x={400} y={200} /><g transform="translate(1100 760)" stroke={INK} strokeWidth="3" fill="none"><path d="M-110 0 Q-40 -200 -10 -480 L10 -480 Q40 -200 110 0" fill="#8a7a6a" /><path d="M-70 -120 L70 -120 M-40 -280 L40 -280" /><path d="M-50 0 Q0 -80 50 0" fill="#d6dbe0" /></g>{[0, 1, 2, 3].map(k => <rect key={k} x={-100 + k * 180} y={420 + (k % 2) * 40} width="160" height="400" fill={['#e8dcc6', '#f0e4cf', '#e0d2bb', '#ece0cb'][k]} stroke={INK} />)}<rect x="-200" y="780" width="2000" height="500" fill="#9a9488" /><Lamp x={650} y={800} />{couple('#3e4a5c')}<Particles kind="rain" n={22} seed={8} /></g>;
     case 'japan': return <g><rect x="-200" y="-200" width="2000" height="1300" fill="#f6e1dc" /><path d="M300 600 L800 160 L1300 600Z" fill="#8fa4bf" /><path d="M640 300 L800 160 L960 300 Q880 280 800 320 Q720 280 640 300Z" fill="#fbf7f2" /><rect x="-200" y="600" width="2000" height="600" fill="#b9c78f" /><g transform="translate(400 820)" stroke={INK}><rect x="-120" y="-300" width="22" height="300" fill="#c9564b" /><rect x="98" y="-300" width="22" height="300" fill="#c9564b" /><path d="M-170 -300 Q0 -330 170 -300 L160 -280 L-160 -280Z" fill="#c9564b" /><rect x="-140" y="-250" width="280" height="16" fill="#c9564b" /></g><Tree x={1250} y={820} s={1.6} c={['#f2bfc0', '#f7d6d0', '#eaa8b0']} /><Particles kind="petal" n={24} seed={13} />{couple('#5d6e5a')}</g>;
     case 'alps': return <g><rect x="-200" y="-200" width="2000" height="1300" fill="#cfe0ec" /><path d="M-200 640 L200 220 L500 520 L850 160 L1200 500 L1500 260 L1800 640Z" fill="#8a9fb5" /><path d="M140 290 L200 220 L260 290 Q200 280 140 290Z M780 240 L850 160 L920 240Q850 230 780 240Z M1440 330 L1500 260 L1560 330Z" fill="#fff" /><rect x="-200" y="620" width="2000" height="700" fill="#9fb67c" /><path d="M-200 700 Q800 660 1800 720" stroke={INK} strokeWidth="4" fill="none" /><g transform="translate(400 690)">{[0, 1, 2].map(k => <g key={k}><rect x={k * 150} y="-60" width="140" height="56" rx="8" fill="#c9564b" stroke={INK} />{[0, 1, 2].map(w => <rect key={w} x={k * 150 + 14 + w * 40} y="-48" width="28" height="20" fill="#ffe7b0" />)}</g>)}</g>{[1100, 1300].map(x => <Tree key={x} x={x} y={760} s={0.9} c={['#3f6a4f', '#5a8060', '#2f5a42']} />)}{couple('#7a4a3a')}</g>;
     default: return <g><rect x="-200" y="-200" width="2000" height="1300" fill="#f5c79a" /><Sun x={800} y={260} />{[0, 1, 2, 3, 4, 5, 6].map(k => <rect key={k} x={-100 + k * 260} y={300 + (k % 3) * 40} width="240" height="440" fill={['#e8a46c', '#f0c88a', '#d98a6a', '#efd2a8'][k % 4]} stroke={INK} />)}<rect x="-200" y="700" width="2000" height="500" fill="#4f8a96" />{[0, 1, 2, 3, 4, 5].map(k => <path key={k} d={`M${k * 300} 760 q20 -8 40 0 t40 0`} stroke="#9fd0d4" strokeWidth="3" fill="none" />)}<path d="M700 790 Q800 820 960 780 L940 800 Q800 840 690 800Z" fill="#2a2420" />{couple('#3e4a5c')}<Bird x={500} y={200} /></g>;
@@ -357,7 +363,7 @@ export function Travel() {
                     <Stage cam={{ x: 800, y: 500, z: lerp(1.05, 1.2, q) }} label={`${D[di].name}: ${D[di].note}`}><Destination id={D[di].id} /></Stage>
                   </div>
                 </div>
-                <div className="absolute right-[6%] top-[8%]" style={{ opacity: seg(q, 0.3, 0.4), transform: `rotate(12deg) scale(${lerp(1.6, 1, seg(q, 0.3, 0.4))})` }}>
+                <div className="travel-postmark absolute right-[6%] top-[8%]" style={{ opacity: seg(q, 0.3, 0.4), transform: `rotate(12deg) scale(${lerp(1.6, 1, seg(q, 0.3, 0.4))})` }}>
                   <div className="font-serif flex h-24 w-24 flex-col items-center justify-center rounded-full text-center" style={{ border: '3px double #b04c3f', color: '#b04c3f', fontSize: 14, letterSpacing: 2, background: 'rgba(251,246,234,.6)' }}>{D[di].name.toUpperCase()}<span className="font-hand" style={{ fontSize: 18 }}>R ♥ J</span></div>
                 </div>
               </div>
@@ -406,12 +412,12 @@ export function Time() {
               {si === 2 && <Particles kind="leaf" n={16} seed={2} />}
               {si === 3 && <Particles kind="snow" n={40} seed={3} />}
               {si === 1 && <Sun x={300} y={200} />}
-              {act === 0 && <><Bench x={700} y={800} s={1} /><Person x={650} y={760} s={1.1} kind="razal" sit age={age} armR={-60} holdR={<Cup x={0} y={8} s={0.9} />} outfit="#7a6a5a" /><Person x={750} y={760} s={1.05} kind="julian" sit flip age={age} armR={-60} holdR={<Cup x={0} y={8} s={0.9} c="#e8c7b0" />} outfit="#b98a8a" /></>}
+              {act === 0 && <><Bench x={700} y={800} s={1} /><SeatedPerson x={650} seatY={benchSeatY(800, 1)} floorY={800} s={1.1} kind="razal" age={age} armR={-60} holdR={<Cup x={0} y={8} s={0.9} />} outfit="#7a6a5a" /><SeatedPerson x={750} seatY={benchSeatY(800, 1)} floorY={800} s={1.05} kind="julian" flip age={age} armR={-60} holdR={<Cup x={0} y={8} s={0.9} c="#e8c7b0" />} outfit="#b98a8a" /></>}
               {act === 1 && <g transform={`translate(${lerp(-200, 200, (p * 4) % 1)} 0)`}><Person x={600} y={800} s={1.1} kind="razal" age={age} walk={p * 80} armR={-28} outfit="#7a6a5a" /><Person x={660} y={800} s={1.05} kind="julian" age={age} walk={p * 80 + 3} armL={28} outfit="#b98a8a" /></g>}
-              {act === 2 && <><Bench x={700} y={800} s={1} /><Person x={650} y={760} s={1.1} kind="razal" sit age={age} armR={-70} holdR={<rect x="-14" y="-10" width="28" height="20" fill="#a85a3e" stroke={INK} />} outfit="#7a6a5a" /><Person x={750} y={760} s={1.05} kind="julian" sit flip age={age} lean={-10} outfit="#b98a8a" /></>}
-              {act === 3 && <><Particles kind="rain" n={50} seed={7} /><g transform="translate(700 560)"><path d="M-110 0 Q0 -90 110 0Z" fill="#5d7b8a" stroke={INK} /><line x1="0" y1="-40" x2="0" y2="120" stroke={INK} strokeWidth="3" /></g><Person x={670} y={800} s={1.1} kind="razal" age={age} armR={-40} outfit="#7a6a5a" /><Person x={730} y={800} s={1.05} kind="julian" flip age={age} armR={-40} outfit="#b98a8a" /></>}
+              {act === 2 && <><Bench x={700} y={800} s={1} /><SeatedPerson x={650} seatY={benchSeatY(800, 1)} floorY={800} s={1.1} kind="razal" age={age} armR={-70} holdR={<rect x="-14" y="-10" width="28" height="20" fill="#a85a3e" stroke={INK} />} outfit="#7a6a5a" /><SeatedPerson x={750} seatY={benchSeatY(800, 1)} floorY={800} s={1.05} kind="julian" flip age={age} lean={-10} outfit="#b98a8a" /></>}
+              {act === 3 && <><Particles kind="rain" n={30} seed={7} /><g transform="translate(700 560)"><path d="M-110 0 Q0 -90 110 0Z" fill="#5d7b8a" stroke={INK} /><line x1="0" y1="-40" x2="0" y2="120" stroke={INK} strokeWidth="3" /></g><Person x={670} y={800} s={1.1} kind="razal" age={age} armR={-40} outfit="#7a6a5a" /><Person x={730} y={800} s={1.05} kind="julian" flip age={age} armR={-40} outfit="#b98a8a" /></>}
             </Stage>
-            <p className="font-hand pointer-events-none absolute left-[6%] top-[8%]" style={{ fontSize: 'clamp(28px,4vw,48px)', color: '#5a3a28', opacity: 0.8 }}>{words[si]}{p > 0.34 ? <span style={{ fontSize: '0.6em' }}> again.</span> : null}</p>
+            <p className="season-label font-hand pointer-events-none absolute left-[6%] bottom-[12%]" style={{ fontSize: 'clamp(28px,4vw,48px)', color: '#5a3a28', opacity: 0.8, textShadow: '0 0 18px rgba(255,243,220,.9)' }}>{words[si]}{p > 0.34 ? <span style={{ fontSize: '0.6em' }}> again.</span> : null}</p>
             <Caption o={win(p, 0.05, 0.22)} pos="top" size="sm">Morning tea, for the ten-thousandth time.</Caption>
             <Caption o={win(p, 0.3, 0.46)} pos="top" size="sm">Slower walks. Same hand.</Caption>
             <Caption o={win(p, 0.54, 0.7)} pos="top" size="sm">You reading. Me pretending to read, watching you.</Caption>
@@ -447,8 +453,8 @@ export function Final() {
               {Array.from({ length: 22 }, (_, k) => <Flower key={k} x={300 + k * 48} y={800 + (k % 3) * 16} s={0.9} c={['#e8c35a', '#f0c3b5', '#d9766c', '#fff3e6'][k % 4]} />)}
               {Array.from({ length: 14 }, (_, k) => <Leaf key={k} x={500 + k * 50} y={815 + (k % 2) * 12} s={0.8} r={k * 40} c={['#d08a3a', '#b8582f', '#e0b04a'][k % 3]} />)}
               <Bench x={800} y={800} s={1.15} />
-              <Person x={748} y={754} s={1.15} kind="razal" sit age={1} armR={-34 - squeeze * 6} outfit="#7a6a5a" />
-              <Person x={852} y={754} s={1.1} kind="julian" sit flip age={1} armR={-34 - squeeze * 6} lean={-6} outfit="#b98a8a" />
+              <SeatedPerson x={748} seatY={benchSeatY(800, 1.15)} floorY={800} s={1.15} kind="razal" age={1} armR={-34 - squeeze * 6} outfit="#7a6a5a" />
+              <SeatedPerson x={852} seatY={benchSeatY(800, 1.15)} floorY={800} s={1.1} kind="julian" flip age={1} armR={-34 - squeeze * 6} lean={-6} outfit="#b98a8a" />
               {squeeze > 0 && <Heart x={800} y={640} s={0.6} c="#c9564b" fill o={squeeze} />}
               <Particles kind="leaf" n={20} seed={9} />
               <rect x="-3000" y="-3000" width="9000" height="9000" fill="#1d1712" opacity={dark} />
